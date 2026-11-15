@@ -13,9 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // EFECTO DEL HEADER AL HACER SCROLL
     const updateHeader = () => {
-        if (header) {
-            header.classList.toggle("scrolled", window.scrollY > 20);
-        }
+        header?.classList.toggle("scrolled", window.scrollY > 20);
     };
 
     updateHeader();
@@ -65,33 +63,67 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // REVELAR ELEMENTOS AL DESPLAZARSE
-    const animatedElements = document.querySelectorAll(
-        ".portfolio-card, .portfolio-hero-stats div"
+    // NAVEGACIÓN ACTIVA EN INDEX
+    const sections = document.querySelectorAll(
+        "#inicio, #servicios, #soluciones, #azure, #inteligencia-artificial, #tecnologias, #nosotros"
     );
 
-    if ("IntersectionObserver" in window) {
-        const revealObserver = new IntersectionObserver(entries => {
+    if ("IntersectionObserver" in window && sections.length) {
+        const sectionObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("visible");
-                    revealObserver.unobserve(entry.target);
+                if (!entry.isIntersecting) return;
+
+                const activeLink = document.querySelector(
+                    `.nav-link[href="#${entry.target.id}"]`
+                );
+
+                if (activeLink) {
+                    navLinks.forEach(link => {
+                        link.classList.toggle("active", link === activeLink);
+                    });
                 }
             });
         }, {
-            threshold: 0.12
+            rootMargin: "-30% 0px -60% 0px"
         });
 
-        animatedElements.forEach(element => {
-            revealObserver.observe(element);
-        });
-    } else {
-        animatedElements.forEach(element => {
-            element.classList.add("visible");
+        sections.forEach(section => sectionObserver.observe(section));
+    }
+
+    // FILTROS DEL PORTAFOLIO
+    const filterButtons = document.querySelectorAll(".portfolio-filter");
+    const portfolioCards = document.querySelectorAll(".portfolio-card");
+
+    if (filterButtons.length && portfolioCards.length) {
+        filterButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const selectedFilter = button.dataset.filter;
+
+                // ACTUALIZAR BOTÓN ACTIVO
+                filterButtons.forEach(filterButton => {
+                    const isActive = filterButton === button;
+
+                    filterButton.classList.toggle("active", isActive);
+                    filterButton.setAttribute(
+                        "aria-pressed",
+                        String(isActive)
+                    );
+                });
+
+                // FILTRAR PROYECTOS
+                portfolioCards.forEach(card => {
+                    const category = card.dataset.category;
+                    const shouldShow =
+                        selectedFilter === "all" ||
+                        category === selectedFilter;
+
+                    card.hidden = !shouldShow;
+                });
+            });
         });
     }
 
-    // EVITAR ESTADOS INCORRECTOS AL CAMBIAR EL TAMAÑO
+    // CERRAR MENÚ AL CAMBIAR A ESCRITORIO
     window.addEventListener("resize", () => {
         if (window.innerWidth > 900) {
             closeMenu();
