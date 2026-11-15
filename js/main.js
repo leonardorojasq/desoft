@@ -6,18 +6,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const navLinks = document.querySelectorAll(".nav-link");
     const currentYear = document.getElementById("currentYear");
 
-    // Año automático
+    // AÑO AUTOMÁTICO DEL FOOTER
     if (currentYear) {
         currentYear.textContent = new Date().getFullYear();
     }
 
-    // Efecto del encabezado al desplazarse
-    window.addEventListener("scroll", () => {
-        header?.classList.toggle("scrolled", window.scrollY > 20);
-    });
+    // EFECTO DEL HEADER AL HACER SCROLL
+    const updateHeader = () => {
+        if (header) {
+            header.classList.toggle("scrolled", window.scrollY > 20);
+        }
+    };
 
-    // Abrir y cerrar menú móvil
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+
+    // MENÚ RESPONSIVE
+    const closeMenu = () => {
+        navigation?.classList.remove("open");
+        menuToggle?.classList.remove("active");
+        menuToggle?.setAttribute("aria-expanded", "false");
+        menuToggle?.setAttribute("aria-label", "Abrir menú");
+    };
+
     menuToggle?.addEventListener("click", () => {
+        if (!navigation) return;
+
         const isOpen = navigation.classList.toggle("open");
 
         menuToggle.classList.toggle("active", isOpen);
@@ -28,37 +42,59 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     });
 
-    // Cerrar menú al seleccionar una opción
+    // CERRAR MENÚ AL SELECCIONAR UN ENLACE
     navLinks.forEach(link => {
-        link.addEventListener("click", () => {
-            navigation?.classList.remove("open");
-            menuToggle?.classList.remove("active");
-            menuToggle?.setAttribute("aria-expanded", "false");
-            menuToggle?.setAttribute("aria-label", "Abrir menú");
-        });
+        link.addEventListener("click", closeMenu);
     });
 
-    // Marcar sección activa al navegar
-    const sections = document.querySelectorAll(
-        "#inicio, #servicios, #soluciones, #tecnologias, #nosotros"
+    // CERRAR MENÚ AL HACER CLIC FUERA
+    document.addEventListener("click", event => {
+        if (
+            navigation?.classList.contains("open") &&
+            !navigation.contains(event.target) &&
+            !menuToggle?.contains(event.target)
+        ) {
+            closeMenu();
+        }
+    });
+
+    // CERRAR MENÚ CON ESCAPE
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeMenu();
+        }
+    });
+
+    // REVELAR ELEMENTOS AL DESPLAZARSE
+    const animatedElements = document.querySelectorAll(
+        ".portfolio-card, .portfolio-hero-stats div"
     );
 
     if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(entries => {
+        const revealObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    navLinks.forEach(link => {
-                        link.classList.toggle(
-                            "active",
-                            link.getAttribute("href") === `#${entry.target.id}`
-                        );
-                    });
+                    entry.target.classList.add("visible");
+                    revealObserver.unobserve(entry.target);
                 }
             });
         }, {
-            rootMargin: "-30% 0px -60% 0px"
+            threshold: 0.12
         });
 
-        sections.forEach(section => observer.observe(section));
+        animatedElements.forEach(element => {
+            revealObserver.observe(element);
+        });
+    } else {
+        animatedElements.forEach(element => {
+            element.classList.add("visible");
+        });
     }
+
+    // EVITAR ESTADOS INCORRECTOS AL CAMBIAR EL TAMAÑO
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 900) {
+            closeMenu();
+        }
+    });
 });

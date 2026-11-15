@@ -732,3 +732,90 @@
     }
 }
 
+
+
+
+
+/* =========================================
+   RESPONSIVE - CLIENTES Y PORTAFOLIO
+========================================= */
+
+@media (max-width: 1024px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .portfolio-hero {
+        padding: 125px 0 75px;
+    }
+
+    .portfolio-section {
+        padding: 85px 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .portfolio-hero {
+        padding: 110px 0 65px;
+    }
+
+    .portfolio-hero h1 {
+        font-size: 2.25rem;
+        letter-spacing: -1.2px;
+    }
+
+    .portfolio-hero > .container > p {
+        font-size: .95rem;
+    }
+
+    .portfolio-hero-stats {
+        gap: 25px;
+        margin-top: 38px;
+    }
+
+    .portfolio-hero-stats div {
+        min-width: 85px;
+    }
+
+    .portfolio-hero-stats strong {
+        font-size: 1.5rem;
+    }
+
+    .portfolio-hero-stats span {
+        font-size: .72rem;
+    }
+
+    .portfolio-section {
+        padding: 65px 0 75px;
+    }
+
+    .portfolio-section .section-heading {
+        margin-bottom: 35px;
+    }
+
+    .portfolio-section .section-heading h2 {
+        font-size: 2rem;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .portfolio-image {
+        min-height: 190px;
+    }
+
+    .portfolio-content {
+        padding: 23px 21px;
+    }
+
+    .portfolio-content > p {
+        min-height: auto;
+    }
+
+    .portfolio-cta {
+        padding: 65px 20px;
+    }
+}
